@@ -12,6 +12,7 @@ pygame.display.set_caption('Game Name')
 screen = pygame.display.set_mode((400, 600), 0, 32)
 
 font = pygame.font.SysFont(None, 30)
+BLACK = (0, 0, 0)
 
 num = 0
 article_num_x = 0
@@ -19,6 +20,8 @@ article_num_y = 0
 article_situation_X = 0
 article_situation_Y = 0
 game_num = 0
+
+x_len = 800  # 배경 크기
 
 
 def draw_text(text, font, color, surface, x, y):
@@ -32,16 +35,15 @@ click = False
 
 
 def main_menu():
+    global click
+    global num
+    global article_num_x, article_situation_X
+    global article_num_y, article_situation_Y
+    global game_num
     while True:
         background = pygame.image.load('img/BG40.png')
-        global click
-        global num
-        global article_num_x, article_situation_X
-        global article_num_y, article_situation_Y
-        global game_num
 
         # 배경 움직이게 하기 ---->
-        x_len = 800  # 배경 크기
         screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
         screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
         num = (num + 1) % x_len  # 배경 크기
@@ -250,18 +252,108 @@ def game_m1():
 
 
 def game_p1():
-    running = True
+    global click
+    global article_num_x, article_num_y
+    global num
+    article_num_x = 0
+    article_num_y = 0
+    running = False
+    before_difficulty = True
     cnt = 0
+    MaxCnt = 25
     numlist = list(range(1, 26))
     shuffle(numlist)
-    while running:
-        global click
-        global article_num_x, article_num_y
-        article_num_x = 0
-        article_num_y = 0
-
+    while before_difficulty:
         background = pygame.image.load('img/BG40.png')
-        screen.blit(background, (0, 0))
+
+        # 배경 움직이게 하기 ---->
+        screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
+        screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
+        num = (num + 1) % x_len  # 배경 크기
+        # 배경 움직이게 하기 ---->
+
+        # 배경에 색깔 추가 ---->
+        t_surface = screen.convert_alpha()
+        t_surface.fill((255, 204, 204, 127))
+        screen.blit(t_surface, (0, 0))
+        # 배경에 색깔 추가 ---->
+
+        game_p1_home1 = pygame.Rect(125, 25, 200, 50)  # 메인 화면 가는 버튼
+        pygame.draw.rect(screen, (42, 255, 84), game_p1_home1)
+
+        game_p1_easy = pygame.Rect(100, 150, 200, 50)  # 난이도 1번
+        pygame.draw.rect(screen, (51, 153, 255), game_p1_easy)
+
+        draw_text('Easy (1 to 25)', font, BLACK, screen, 110, 160)
+
+        game_p1_mid = pygame.Rect(100, 300, 200, 50)  # 난이도 1번
+        pygame.draw.rect(screen, (51, 153, 255), game_p1_mid)
+
+        draw_text('Medium (1 to 50)', font, BLACK, screen, 110, 310)
+
+        game_p1_hard = pygame.Rect(100, 450, 200, 50)  # 난이도 1번
+        pygame.draw.rect(screen, (51, 153, 255), game_p1_hard)
+
+        draw_text('Hard (1 to 100)', font, BLACK, screen, 110, 460)
+
+        mx, my = pygame.mouse.get_pos()
+
+        if game_p1_home1.collidepoint((mx, my)):
+            if click:
+                click = False
+                main_menu()
+        if game_p1_easy.collidepoint((mx, my)):
+            if click:
+                click = False
+                running = True
+                before_difficulty = False
+        if game_p1_mid.collidepoint((mx, my)):
+            if click:
+                click = False
+                MaxCnt = 50
+                running = True
+                before_difficulty = False
+        if game_p1_hard.collidepoint((mx, my)):
+            if click:
+                click = False
+                MaxCnt = 100
+                running = True
+                before_difficulty = False
+
+        draw_text('Game 1', font, (102, 153, 255), screen, 20, 20)
+        draw_text(str(cnt), font, (102, 153, 255), screen, 40, 40)
+        #  이벤트 루프 =========================
+
+        click = False
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+
+        pygame.display.update()
+        mainClock.tick(60)
+
+    while running:
+        background = pygame.image.load('img/BG40.png')
+
+        # 배경 움직이게 하기 ---->
+        screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
+        screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
+        num = (num + 1) % x_len  # 배경 크기
+        # 배경 움직이게 하기 ---->
+
+        # 배경에 색깔 추가 ---->
+        t_surface = screen.convert_alpha()
+        t_surface.fill((255, 204, 204, 127))
+        screen.blit(t_surface, (0, 0))
+        # 배경에 색깔 추가 ---->
 
         game_p1_home = pygame.Rect(125, 25, 200, 50)  # 메인 화면 가는 버튼
         pygame.draw.rect(screen, (42, 255, 84), game_p1_home)
@@ -270,7 +362,19 @@ def game_p1():
             for j in range(5):
                 oneto25button.append(pygame.Rect(75 + j * 50, 200 + i * 50, 40, 40))
                 pygame.draw.rect(screen, (0, 0, 0), oneto25button[i * 5 + j])
-                draw_text(str(numlist[i * 5 + j]), font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                if cnt == MaxCnt:
+                    draw_text("X", font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                elif numlist[i * 5 + j] > MaxCnt:
+                    draw_text("X", font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                elif cnt < numlist[i * 5 + j]:
+                    draw_text(str(numlist[i * 5 + j]), font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                elif cnt == numlist[i * 5 + j]:
+                    if numlist[i * 5 + j] < MaxCnt:
+                        numlist[i * 5 + j] += 25
+                    if numlist[i * 5 + j] > MaxCnt:
+                        draw_text("X", font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                    elif cnt <= numlist[i * 5 + j]:
+                        draw_text(str(numlist[i * 5 + j]), font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
         mx, my = pygame.mouse.get_pos()
 
         if game_p1_home.collidepoint((mx, my)):
@@ -299,7 +403,8 @@ def game_p1():
             if oneto25button[k].collidepoint((mx, my)):
                 if click:
                     if numlist[k] == cnt + 1:
-                        cnt += 1
+                        if cnt != MaxCnt:
+                            cnt += 1
 
 
         pygame.display.update()
