@@ -13,6 +13,7 @@ screen = pygame.display.set_mode((400, 600), 0, 32)
 
 font = pygame.font.SysFont(None, 30)
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 num = 0
 article_num_x = 0
@@ -74,7 +75,7 @@ def main_menu():
             if game_num == 2:
                 game_p2()
 
-        draw_text('Main menu', font, (0, 0, 0, min(article_num_y, 255)), screen, 20, 20 + article_num_y)
+        draw_text('Main menu', font, BLACK, screen, 20, 20 + article_num_y)
 
         mx, my = pygame.mouse.get_pos()
 
@@ -95,20 +96,20 @@ def main_menu():
         nBY = 30  # next_Button_Y
         nBX = 15  # next_Button_X
         nBsX = 20  # next_Button_startX
-        pygame.draw.polygon(screen, (0, 0, 0), [[nBsX, 300 + article_num_y], [nBsX + nBX, 300 + nBY + article_num_y], [nBsX + nBX, 300 - nBY + article_num_y]])
-        pygame.draw.polygon(screen, (0, 0, 0), [[400 - nBsX, 300 + article_num_y], [400 - nBsX - nBX, 300 + nBY + article_num_y], [400 - nBsX - nBX, 300 - nBY + article_num_y]])
+        pygame.draw.polygon(screen, BLACK, [[nBsX, 300 + article_num_y], [nBsX + nBX, 300 + nBY + article_num_y], [nBsX + nBX, 300 - nBY + article_num_y]])
+        pygame.draw.polygon(screen, BLACK, [[400 - nBsX, 300 + article_num_y], [400 - nBsX - nBX, 300 + nBY + article_num_y], [400 - nBsX - nBX, 300 - nBY + article_num_y]])
         pygame.draw.rect(screen, (51, 153, 255), button_game_m1)
         pygame.draw.rect(screen, (51, 153, 255), button_game_m2)
         pygame.draw.rect(screen, (51, 153, 255), button_game_p1)
         pygame.draw.rect(screen, (51, 153, 255), button_game_p2)
 
-        draw_text('Main', font, (255, 255, 255), screen, 130 + article_num_x, 115 + article_num_y)
-        draw_text('Game -1', font, (255, 255, 255), screen, -270 + article_num_x, 115 + article_num_y)
-        draw_text('Game -2', font, (255, 255, 255), screen, -670 + article_num_x, 115 + article_num_y)
-        draw_text('Game 1', font, (255, 255, 255), screen, 530 + article_num_x, 115 + article_num_y)
-        draw_text('Game 2', font, (255, 255, 255), screen, 930 + article_num_x, 115 + article_num_y)
-        draw_text('Option', font, (255, 255, 255), screen, 130 + article_num_x, 215 + article_num_y)
-        draw_text('Move', font, (255, 255, 255), screen, 130 + article_num_x, 315 + article_num_y)
+        draw_text('Main', font, WHITE, screen, 130 + article_num_x, 115 + article_num_y)
+        draw_text('Game -1', font, WHITE, screen, -270 + article_num_x, 115 + article_num_y)
+        draw_text('Game -2', font, WHITE, screen, -670 + article_num_x, 115 + article_num_y)
+        draw_text('Game 1', font, WHITE, screen, 530 + article_num_x, 115 + article_num_y)
+        draw_text('Game 2', font, WHITE, screen, 930 + article_num_x, 115 + article_num_y)
+        draw_text('Option', font, WHITE, screen, 130 + article_num_x, 215 + article_num_y)
+        draw_text('Move', font, WHITE, screen, 130 + article_num_x, 315 + article_num_y)
 
         if button_1.collidepoint((mx, my)):
             if click:
@@ -250,6 +251,13 @@ def game_m1():
         pygame.display.update()
         mainClock.tick(60)
 
+def convert_time(ticks):
+    ms = ticks % 1000
+    sec = ticks // 1000
+    minutes = sec // 60
+
+    return str(minutes).zfill(2) + ":" + str(sec).zfill(2) + ":" + str(ms).zfill(3)
+
 
 def game_p1():
     global click
@@ -278,23 +286,24 @@ def game_p1():
         screen.blit(t_surface, (0, 0))
         # 배경에 색깔 추가 ---->
 
-        game_p1_home1 = pygame.Rect(125, 25, 200, 50)  # 메인 화면 가는 버튼
-        pygame.draw.rect(screen, (42, 255, 84), game_p1_home1)
+        game_p1_home1 = pygame.Rect(280, 20, 100, 50)  # 메인 화면 가는 버튼
+        pygame.draw.rect(screen, (102, 204, 255), game_p1_home1)
+        draw_text('Main', font, WHITE, screen, 290, 30)
 
         game_p1_easy = pygame.Rect(100, 150, 200, 50)  # 난이도 1번
         pygame.draw.rect(screen, (51, 153, 255), game_p1_easy)
 
-        draw_text('Easy (1 to 25)', font, BLACK, screen, 110, 160)
+        draw_text('Easy (1 to 25)', font, WHITE, screen, 110, 160)
 
         game_p1_mid = pygame.Rect(100, 300, 200, 50)  # 난이도 1번
         pygame.draw.rect(screen, (51, 153, 255), game_p1_mid)
 
-        draw_text('Medium (1 to 50)', font, BLACK, screen, 110, 310)
+        draw_text('Medium (1 to 50)', font, WHITE, screen, 110, 310)
 
         game_p1_hard = pygame.Rect(100, 450, 200, 50)  # 난이도 1번
         pygame.draw.rect(screen, (51, 153, 255), game_p1_hard)
 
-        draw_text('Hard (1 to 100)', font, BLACK, screen, 110, 460)
+        draw_text('Hard (1 to 100)', font, WHITE, screen, 110, 460)
 
         mx, my = pygame.mouse.get_pos()
 
@@ -307,21 +316,23 @@ def game_p1():
                 click = False
                 running = True
                 before_difficulty = False
+                start_ticks = pygame.time.get_ticks()  # 현재 tick 을 받아옴
         if game_p1_mid.collidepoint((mx, my)):
             if click:
                 click = False
                 MaxCnt = 50
                 running = True
                 before_difficulty = False
+                start_ticks = pygame.time.get_ticks()  # 현재 tick 을 받아옴
         if game_p1_hard.collidepoint((mx, my)):
             if click:
                 click = False
                 MaxCnt = 100
                 running = True
                 before_difficulty = False
+                start_ticks = pygame.time.get_ticks()  # 현재 tick 을 받아옴
 
-        draw_text('Game 1', font, (102, 153, 255), screen, 20, 20)
-        draw_text(str(cnt), font, (102, 153, 255), screen, 40, 40)
+        draw_text('Game 1', font, BLACK, screen, 20, 20)
         #  이벤트 루프 =========================
 
         click = False
@@ -355,26 +366,29 @@ def game_p1():
         screen.blit(t_surface, (0, 0))
         # 배경에 색깔 추가 ---->
 
-        game_p1_home = pygame.Rect(125, 25, 200, 50)  # 메인 화면 가는 버튼
-        pygame.draw.rect(screen, (42, 255, 84), game_p1_home)
+        game_p1_home = pygame.Rect(280, 20, 100, 50)  # 메인 화면 가는 버튼
+        pygame.draw.rect(screen, (102, 204, 255), game_p1_home)
+        draw_text('Main', font, WHITE, screen, 290, 30)
         oneto25button = []
+        box_size = 60
+        box_start = 55
         for i in range(5):
             for j in range(5):
-                oneto25button.append(pygame.Rect(75 + j * 50, 200 + i * 50, 40, 40))
+                oneto25button.append(pygame.Rect(box_start + j * box_size, 200 + i * box_size, box_size - 10, box_size - 10))
                 pygame.draw.rect(screen, (0, 0, 0), oneto25button[i * 5 + j])
                 if cnt == MaxCnt:
-                    draw_text("X", font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                    draw_text("X", font, WHITE, screen, box_start + 5 + j * box_size, 205 + i * box_size)
                 elif numlist[i * 5 + j] > MaxCnt:
-                    draw_text("X", font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                    draw_text("X", font, WHITE, screen, box_start + 5 + j * box_size, 205 + i * box_size)
                 elif cnt < numlist[i * 5 + j]:
-                    draw_text(str(numlist[i * 5 + j]), font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                    draw_text(str(numlist[i * 5 + j]), font, WHITE, screen, box_start + 5 + j * box_size, 205 + i * box_size)
                 elif cnt == numlist[i * 5 + j]:
                     if numlist[i * 5 + j] < MaxCnt:
                         numlist[i * 5 + j] += 25
                     if numlist[i * 5 + j] > MaxCnt:
-                        draw_text("X", font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                        draw_text("X", font, WHITE, screen, box_start + 5 + j * box_size, 205 + i * box_size)
                     elif cnt <= numlist[i * 5 + j]:
-                        draw_text(str(numlist[i * 5 + j]), font, (102, 153, 255), screen, 80 + j * 50, 205 + i * 50)
+                        draw_text(str(numlist[i * 5 + j]), font, WHITE, screen, box_start + 5 + j * box_size, 205 + i * box_size)
         mx, my = pygame.mouse.get_pos()
 
         if game_p1_home.collidepoint((mx, my)):
@@ -382,8 +396,15 @@ def game_p1():
                 click = False
                 main_menu()
 
-        draw_text('Game 1', font, (102, 153, 255), screen, 20, 20)
-        draw_text(str(cnt), font, (102, 153, 255), screen, 40, 40)
+        draw_text('Game 1', font, BLACK, screen, 20, 20)
+        draw_text(str(cnt), font, BLACK, screen, 40, 60)
+
+        if cnt != MaxCnt:
+            now_ticks = pygame.time.get_ticks()  # 현재 tick 을 받아옴
+            now_time = convert_time(now_ticks - start_ticks)
+
+        cell_text = font.render(now_time, True, WHITE) # text render
+        screen.blit(cell_text, (150, 540))
         #  이벤트 루프 =========================
 
         click = False
@@ -412,15 +433,26 @@ def game_p1():
 
 
 def game_p2():
+    global click
+    global article_num_x, article_num_y
+    global num
+    article_num_x = 0
+    article_num_y = 0
     running = True
     while running:
-        global click
-        global article_num_x, article_num_y
-        article_num_x = 0
-        article_num_y = 0
-
         background = pygame.image.load('img/BG40.png')
-        screen.blit(background, (0, 0))
+
+        # 배경 움직이게 하기 ---->
+        screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
+        screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
+        num = (num + 5) % x_len  # 배경 크기
+        # 배경 움직이게 하기 ---->
+
+        # 배경에 색깔 추가 ---->
+        t_surface = screen.convert_alpha()
+        t_surface.fill((255, 204, 204, 127))
+        screen.blit(t_surface, (0, 0))
+        # 배경에 색깔 추가 ---->
 
         Game2_Button1 = pygame.Rect(50, 100, 200, 50)  # 메인 화면 맨 위 버튼
         pygame.draw.rect(screen, (42, 255, 84), Game2_Button1)
