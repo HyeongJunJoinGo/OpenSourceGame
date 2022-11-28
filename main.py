@@ -439,6 +439,17 @@ def game_p2():
     article_num_x = 0
     article_num_y = 0
     running = True
+    l1 = list(range(1, 4))
+    l2 = list(range(1, 4))
+    num_list = l1 + l2
+    shuffle(num_list)
+    print(num_list)
+    card_state = [0] * 6
+    flip_ing = False
+    fliping_card = 0
+    back_flip = False
+    flip_cnt = 0
+    flip_card = 0
     while running:
         background = pygame.image.load('img/BG40.png')
 
@@ -454,14 +465,76 @@ def game_p2():
         screen.blit(t_surface, (0, 0))
         # 배경에 색깔 추가 ---->
 
-        Game2_Button1 = pygame.Rect(50, 100, 200, 50)  # 메인 화면 맨 위 버튼
-        pygame.draw.rect(screen, (42, 255, 84), Game2_Button1)
+        game_p2_home = pygame.Rect(280, 20, 100, 50)  # 메인 화면 가는 버튼
+        pygame.draw.rect(screen, (102, 204, 255), game_p2_home)
+        draw_text('Main', font, WHITE, screen, 290, 30)
+
+        card_back = pygame.image.load('img/Card_Back.jpg')
+        card_back = pygame.transform.scale(card_back, (50, 70))
+        card_back2 = pygame.image.load('img/Card_Back.jpg')
+        card_back2 = pygame.transform.scale(card_back2, (50, 70))
+        card = []
+        card_button = []
+
+        for i in range(2):
+            for j in range(3):
+                cardname = "img/card" + str(num_list[i * 3 + j]) + ".png"
+                card.append(pygame.image.load(cardname))
+                card[i * 3 + j] = pygame.transform.scale(card[i * 3 + j], (50, 70))
+                card_button.append(pygame.Rect(100 + i * 70, 100 + j * 100, 50, 70))
+                if card_state[i * 3 + j] == 0:
+                    screen.blit(card_back, (100 + i * 70, 100 + j * 100))
+                elif card_state[i * 3 + j] == 1:
+                    if flip_ing and fliping_card == i * 3 + j:
+                        card[i * 3 + j] = pygame.transform.scale(card[i * 3 + j], (max(0, flip_cnt * 10 - 50), 70))
+                        card_back2 = pygame.transform.scale(card_back2, (max(0, 50 - flip_cnt * 10), 70))
+                        screen.blit(card[i * 3 + j], (150 + i * 70 - flip_cnt * 5, 100 + j * 100))
+                        screen.blit(card_back2, (100 + i * 70 + flip_cnt * 5, 100 + j * 100))
+                        if flip_cnt < 10:
+                            flip_cnt += 1
+                        else:
+                            flip_cnt = 0
+                            flip_ing = False
+                            flip_card = min(flip_card + 1, 2)
+                    else:
+                        card[i * 3 + j] = pygame.transform.scale(card[i * 3 + j], (50, 70))
+                        screen.blit(card[i * 3 + j], (100 + i * 70, 100 + j * 100))
+                else:
+                    screen.blit(card[i * 3 + j], (100 + i * 70, 100 + j * 100))
+
+        if flip_card == 2:
+            a = []
+            flip_card = 0
+            for k in range(6):
+                if card_state[k] == 1:
+                    a.append(k)
+                    print(a)
+            pygame.time.delay(200)
+            if num_list[a[0]] == num_list[a[1]]:
+                card_state[a[0]] = 2
+                card_state[a[1]] = 2
+            else:
+                card_state[a[0]] = 0
+                card_state[a[1]] = 0
+
+
         mx, my = pygame.mouse.get_pos()
 
-        if Game2_Button1.collidepoint((mx, my)):
+        if game_p2_home.collidepoint((mx, my)):
             if click:
                 click = False
                 main_menu()
+
+        for i in range(2):
+            for j in range(3):
+                if card_button[i * 3 + j].collidepoint((mx, my)):
+                    if click and not flip_ing:
+                        if card_state[i * 3 + j] == 0:
+                            click = False
+                            flip_ing = True
+                            fliping_card = i * 3 + j
+                            card_state[i * 3 + j] = 1
+                            flip_cnt = 1
 
         draw_text('Game 2', font, (102, 153, 255), screen, 20, 20)
         #  이벤트 루프 =========================
