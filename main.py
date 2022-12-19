@@ -3,6 +3,7 @@ import sys
 import random
 from random import random
 from random import shuffle
+from random import randrange
 from pygame.locals import *
 
 mainClock = pygame.time.Clock()
@@ -213,26 +214,158 @@ def game_m2():
 
 
 def game_m1():
+    global click
+    global article_num_x, article_num_y
+    global num
+    article_num_x = 0
+    article_num_y = 0
     running = True
+    background = pygame.image.load('img/BG40.png')
+    numList = [randrange(1, 5) for i in range(100)]
+    print(numList)
+    ColorNum1 = 0
+    ColorNum2 = 0
+    ColorNum3 = 0
+    ColorNum4 = 0
+    showAns = True
+    pressAns = False
+    score = 1
+    nowScore = 0
+    nowState = 0
+    fail = False
+    start_ticks = pygame.time.get_ticks()
     while running:
-        global click
-        global article_num_x, article_num_y
-        article_num_x = 0
-        article_num_y = 0
 
-        background = pygame.image.load('img/BG40.png')
-        screen.blit(background, (0, 0))
+        # 배경 움직이게 하기 ---->
+        screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
+        screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
+        num = (num + 1) % x_len  # 배경 크기
+        # 배경 움직이게 하기 ---->
 
-        Gamem1_Button1 = pygame.Rect(50, 100, 200, 50)  # 메인 화면 맨 위 버튼
-        pygame.draw.rect(screen, (42, 255, 84), Gamem1_Button1)
+        # 배경에 색깔 추가 ---->
+        t_surface = screen.convert_alpha()
+        t_surface.fill((255, 153, 153, 127))
+        screen.blit(t_surface, (0, 0))
+        # 배경에 색깔 추가 ---->
+
+        game_m1_home1 = pygame.Rect(280, 20, 100, 50)  # 메인 화면 가는 버튼
+        pygame.draw.rect(screen, (153, 204, 255), game_m1_home1)
+        draw_text('Main', font, BLACK, screen, 290, 30)
+
+        game_m1_btn1 = pygame.Rect(160, 110, 80, 80)  # 버튼 1
+        pygame.draw.rect(screen, (min(ColorNum1, 255), min(ColorNum1, 255), min(ColorNum1, 255)), game_m1_btn1)
+        draw_text('1', font, WHITE, screen, 193, 140)
+
+        game_m1_btn2 = pygame.Rect(10, 260, 80, 80)  # 버튼 2
+        pygame.draw.rect(screen, (min(ColorNum2, 255), min(ColorNum2, 255), min(ColorNum2, 255)), game_m1_btn2)
+        draw_text('2', font, WHITE, screen, 43, 290)
+
+        game_m1_btn3 = pygame.Rect(310, 260, 80, 80)  # 버튼 3
+        pygame.draw.rect(screen, (min(ColorNum3, 255), min(ColorNum3, 255), min(ColorNum3, 255)), game_m1_btn3)
+        draw_text('3', font, WHITE, screen, 343, 290)
+
+        game_m1_btn4 = pygame.Rect(160, 410, 80, 80)  # 버튼 4
+        pygame.draw.rect(screen, (min(ColorNum4, 255), min(ColorNum4, 255), min(ColorNum4, 255)), game_m1_btn4)
+        draw_text('4', font, WHITE, screen, 193, 440)
+
+        if showAns:
+            if nowScore < score:
+                if numList[nowScore] == 1:
+                    ColorNum1 += 10
+                    if ColorNum1 > 255:
+                        ColorNum1 = 0
+                        nowScore += 1
+                elif numList[nowScore] == 2:
+                    ColorNum2 += 10
+                    if ColorNum2 > 255:
+                        ColorNum2 = 0
+                        nowScore += 1
+                elif numList[nowScore] == 3:
+                    ColorNum3 += 10
+                    if ColorNum3 > 255:
+                        ColorNum3 = 0
+                        nowScore += 1
+                else:
+                    ColorNum4 += 10
+                    if ColorNum4 > 255:
+                        ColorNum4 = 0
+                        nowScore += 1
+            else:
+                showAns = False
+                pressAns = True
+                nowScore = 0
+
         mx, my = pygame.mouse.get_pos()
 
-        if Gamem1_Button1.collidepoint((mx, my)):
+        if pressAns:
+            if game_m1_btn1.collidepoint((mx, my)):
+                if click:
+                    click = False
+                    ColorNum1 = 100
+                    if numList[nowState] == 1:
+                        nowState += 1
+                    else:
+                        fail = True
+            if game_m1_btn2.collidepoint((mx, my)):
+                if click:
+                    click = False
+                    ColorNum2 = 100
+                    if numList[nowState] == 2:
+                        nowState += 1
+                    else:
+                        fail = True
+            if game_m1_btn3.collidepoint((mx, my)):
+                if click:
+                    click = False
+                    ColorNum3 = 100
+                    if numList[nowState] == 3:
+                        nowState += 1
+                    else:
+                        fail = True
+            if game_m1_btn4.collidepoint((mx, my)):
+                if click:
+                    click = False
+                    ColorNum4 = 100
+                    if numList[nowState] == 4:
+                        nowState += 1
+                    else:
+                        fail = True
+
+            if nowState == score:
+                nowState = 0
+                score += 1
+                showAns = True
+                pressAns = False
+
+        if fail:
+            showAns = False
+            pressAns = False
+            draw_text('Fail', font, WHITE, screen, 20, 110)
+
+
+        if game_m1_home1.collidepoint((mx, my)):
             if click:
                 click = False
                 main_menu()
 
-        draw_text('Game -1', font, (102, 153, 255), screen, 20, 20)
+        draw_text('Game -1', font, WHITE, screen, 20, 20)
+        draw_text(str(nowState), font, WHITE, screen, 20, 50)
+        draw_text(str(score), font, WHITE, screen, 20, 80)
+        now_ticks = pygame.time.get_ticks()  # 현재 tick 을 받아옴
+        now_time = convert_time(now_ticks - start_ticks)
+
+        if not fail:
+            cell_text = font.render(now_time, True, WHITE) # text render
+        screen.blit(cell_text, (150, 540))
+
+        if ColorNum1 > 0:
+            ColorNum1 = max(ColorNum1 - 5, 0)
+        if ColorNum2 > 0:
+            ColorNum2 = max(ColorNum2 - 5, 0)
+        if ColorNum3 > 0:
+            ColorNum3 = max(ColorNum3 - 5, 0)
+        if ColorNum4 > 0:
+            ColorNum4 = max(ColorNum4 - 5, 0)
         #  이벤트 루프 =========================
 
         click = False
@@ -433,108 +566,24 @@ def game_p1():
 
 
 def game_p2():
-    global click
-    global article_num_x, article_num_y
-    global num
-    article_num_x = 0
-    article_num_y = 0
     running = True
-    l1 = list(range(1, 4))
-    l2 = list(range(1, 4))
-    num_list = l1 + l2
-    shuffle(num_list)
-    print(num_list)
-    card_state = [0] * 6
-    flip_ing = False
-    fliping_card = 0
-    back_flip = False
-    flip_cnt = 0
-    flip_card = 0
     while running:
+        global click
+        global article_num_x, article_num_y
+        article_num_x = 0
+        article_num_y = 0
+
         background = pygame.image.load('img/BG40.png')
+        screen.blit(background, (0, 0))
 
-        # 배경 움직이게 하기 ---->
-        screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
-        screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
-        num = (num + 5) % x_len  # 배경 크기
-        # 배경 움직이게 하기 ---->
-
-        # 배경에 색깔 추가 ---->
-        t_surface = screen.convert_alpha()
-        t_surface.fill((255, 204, 204, 127))
-        screen.blit(t_surface, (0, 0))
-        # 배경에 색깔 추가 ---->
-
-        game_p2_home = pygame.Rect(280, 20, 100, 50)  # 메인 화면 가는 버튼
-        pygame.draw.rect(screen, (102, 204, 255), game_p2_home)
-        draw_text('Main', font, WHITE, screen, 290, 30)
-
-        card_back = pygame.image.load('img/Card_Back.jpg')
-        card_back = pygame.transform.scale(card_back, (50, 70))
-        card_back2 = pygame.image.load('img/Card_Back.jpg')
-        card_back2 = pygame.transform.scale(card_back2, (50, 70))
-        card = []
-        card_button = []
-
-        for i in range(2):
-            for j in range(3):
-                cardname = "img/card" + str(num_list[i * 3 + j]) + ".png"
-                card.append(pygame.image.load(cardname))
-                card[i * 3 + j] = pygame.transform.scale(card[i * 3 + j], (50, 70))
-                card_button.append(pygame.Rect(100 + i * 70, 100 + j * 100, 50, 70))
-                if card_state[i * 3 + j] == 0:
-                    screen.blit(card_back, (100 + i * 70, 100 + j * 100))
-                elif card_state[i * 3 + j] == 1:
-                    if flip_ing and fliping_card == i * 3 + j:
-                        card[i * 3 + j] = pygame.transform.scale(card[i * 3 + j], (max(0, flip_cnt * 10 - 50), 70))
-                        card_back2 = pygame.transform.scale(card_back2, (max(0, 50 - flip_cnt * 10), 70))
-                        screen.blit(card[i * 3 + j], (150 + i * 70 - flip_cnt * 5, 100 + j * 100))
-                        screen.blit(card_back2, (100 + i * 70 + flip_cnt * 5, 100 + j * 100))
-                        if flip_cnt < 10:
-                            flip_cnt += 1
-                        else:
-                            flip_cnt = 0
-                            flip_ing = False
-                            flip_card = min(flip_card + 1, 2)
-                    else:
-                        card[i * 3 + j] = pygame.transform.scale(card[i * 3 + j], (50, 70))
-                        screen.blit(card[i * 3 + j], (100 + i * 70, 100 + j * 100))
-                else:
-                    screen.blit(card[i * 3 + j], (100 + i * 70, 100 + j * 100))
-
-        if flip_card == 2:
-            a = []
-            flip_card = 0
-            for k in range(6):
-                if card_state[k] == 1:
-                    a.append(k)
-                    print(a)
-            pygame.time.delay(200)
-            if num_list[a[0]] == num_list[a[1]]:
-                card_state[a[0]] = 2
-                card_state[a[1]] = 2
-            else:
-                card_state[a[0]] = 0
-                card_state[a[1]] = 0
-
-
+        Gamep2_Button1 = pygame.Rect(50, 100, 200, 50)  # 메인 화면 맨 위 버튼
+        pygame.draw.rect(screen, (42, 255, 84), Gamep2_Button1)
         mx, my = pygame.mouse.get_pos()
 
-        if game_p2_home.collidepoint((mx, my)):
+        if Gamep2_Button1.collidepoint((mx, my)):
             if click:
                 click = False
                 main_menu()
-
-        for i in range(2):
-            for j in range(3):
-                if card_button[i * 3 + j].collidepoint((mx, my)):
-                    if click and not flip_ing:
-                        if card_state[i * 3 + j] == 0:
-                            click = False
-                            flip_ing = True
-                            fliping_card = i * 3 + j
-                            card_state[i * 3 + j] = 1
-                            flip_cnt = 1
 
         draw_text('Game 2', font, (102, 153, 255), screen, 20, 20)
         #  이벤트 루프 =========================
