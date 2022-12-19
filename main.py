@@ -428,12 +428,12 @@ def game_p1():
 
         draw_text('Easy (1 to 25)', font, WHITE, screen, 110, 160)
 
-        game_p1_mid = pygame.Rect(100, 300, 200, 50)  # 난이도 1번
+        game_p1_mid = pygame.Rect(100, 300, 200, 50)  # 난이도 2번
         pygame.draw.rect(screen, (51, 153, 255), game_p1_mid)
 
         draw_text('Medium (1 to 50)', font, WHITE, screen, 110, 310)
 
-        game_p1_hard = pygame.Rect(100, 450, 200, 50)  # 난이도 1번
+        game_p1_hard = pygame.Rect(100, 450, 200, 50)  # 난이도 3번
         pygame.draw.rect(screen, (51, 153, 255), game_p1_hard)
 
         draw_text('Hard (1 to 100)', font, WHITE, screen, 110, 460)
@@ -567,25 +567,72 @@ def game_p1():
 
 def game_p2():
     running = True
+    global click
+    global article_num_x, article_num_y
+    global num
+    article_num_x = 0
+    article_num_y = 0
+    spaceList = [[i, j] for i in range(5) for j in range(5)]
+    print(spaceList)
+    showNum = True
+    blindNum = False
+    cnt = 0
+    shuffle(spaceList)
+    start_ticks = pygame.time.get_ticks()
     while running:
-        global click
-        global article_num_x, article_num_y
-        article_num_x = 0
-        article_num_y = 0
 
         background = pygame.image.load('img/BG40.png')
-        screen.blit(background, (0, 0))
 
-        Gamep2_Button1 = pygame.Rect(50, 100, 200, 50)  # 메인 화면 맨 위 버튼
-        pygame.draw.rect(screen, (42, 255, 84), Gamep2_Button1)
+        # 배경 움직이게 하기 ---->
+        screen.blit(background, (num - (x_len - 400), 0))  # (배경 크기 - 400)
+        screen.blit(background, (num - (x_len * 2 - 400), 0))  # (배경 크기 * 2 - 400)
+        num = (num + 1) % x_len  # 배경 크기
+        # 배경 움직이게 하기 ---->
+
+        # 배경에 색깔 추가 ---->
+        t_surface = screen.convert_alpha()
+        t_surface.fill((51, 204, 204, 127))
+        screen.blit(t_surface, (0, 0))
+        # 배경에 색깔 추가 ---->
+
+        game_p2_home = pygame.Rect(280, 20, 100, 50)  # 메인 화면 가는 버튼
+        pygame.draw.rect(screen, (102, 204, 255), game_p2_home)
+        draw_text('Main', font, WHITE, screen, 290, 30)
+
         mx, my = pygame.mouse.get_pos()
 
-        if Gamep2_Button1.collidepoint((mx, my)):
+        if game_p2_home.collidepoint((mx, my)):
             if click:
                 click = False
                 main_menu()
 
-        draw_text('Game 2', font, (102, 153, 255), screen, 20, 20)
+        draw_text('Game 2', font, BLACK, screen, 20, 20)
+
+        p2button = []
+
+        box_start = 55
+        box_size = 60
+
+        now_ticks = pygame.time.get_ticks()  # 현재 tick 을 받아옴
+        if now_ticks - start_ticks > 3000 and showNum:
+            showNum = False
+            blindNum = True
+
+        if showNum:
+            for i in range(6):
+                p2button.append(pygame.Rect(box_start + spaceList[i][0] * box_size, 200 + spaceList[i][1] * box_size, box_size - 10, box_size - 10))
+                pygame.draw.rect(screen, (0, 0, 0), p2button[i])
+                draw_text(str(i + 1), font, WHITE, screen, 20 + box_start + spaceList[i][0] * box_size, 15 + 200 + spaceList[i][1] * box_size)
+
+                cell_text = font.render(str((3000 - now_ticks + start_ticks) / 1000), True, BLACK)  # text render
+                screen.blit(cell_text, (175, 540))
+
+        if blindNum:
+            for i in range(6):
+                p2button.append(pygame.Rect(box_start + spaceList[i][0] * box_size, 200 + spaceList[i][1] * box_size, box_size - 10, box_size - 10))
+                if i >= cnt:
+                    pygame.draw.rect(screen, (0, 0, 0), p2button[i])
+
         #  이벤트 루프 =========================
 
         click = False
@@ -600,6 +647,19 @@ def game_p2():
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
+
+        for i in range(6):
+            if p2button[i].collidepoint((mx, my)):
+                if click and blindNum:
+                    if i == cnt and cnt <= 5:
+                        cnt += 1
+
+        if cnt == 6:
+            showNum = True
+            blindNum = False
+            shuffle(spaceList)
+            cnt = 0
+            start_ticks = pygame.time.get_ticks()
 
         pygame.display.update()
         mainClock.tick(60)
